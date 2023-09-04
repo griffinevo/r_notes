@@ -20,7 +20,17 @@ code, h1, h2, h3, h4, h5, h6 {
   font-family: 'Source Code Pro', monospace;}
 
 pre{
-  margin-bottom: 2.5em;
+  margin: 0.75em 1em 2em 1em;
+  border-radius: 0 0 0.4em 0.4em;
+  border: 1px solid #e0b6c8;
+  background-color: white;
+  white-space: pre !important; 
+  overflow-x: auto !important;}
+
+pre.r{
+  margin: 2em 1em 0 1em;
+  border-radius: 0.4em 0.4em 0 0;
+  border: 1px solid #d11161;
 }
 
 h1 {
@@ -35,11 +45,46 @@ h3::before {
   content: "> ";
   color: #79a8b5;
 }
+
+h5 { 
+    margin-top: 1em;
+    padding-top: 0;
+    font-size: 16pt;
+    color: #d11161;}
+
+h6 { 
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 16pt;
+    color: #d11161;}
+
+.box {
+    margin: 1em;
+    padding: 2em;
+    background-color: #e6edf0;
+}
+
+.box:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    color: red;
+}
 </style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warnings=FALSE)
 library(readr)
+library(readxl)
+library(data.table)
+library(nycflights13)
+#library(xlsx)
+```
+
+
+```{r, include=FALSE, cache=TRUE}
+fwrite(flights, "data/flights.txt", sep="\t")
+fwrite(flights, "data/flights.csv", sep=",")
+#write.xlsx(flights, "data/flights.xlsx")
 ```
 
 
@@ -161,12 +206,13 @@ From now on, we will mostly be working in data.tables because they are fast and 
 
 ### Indexing data.tables
 
-#### Subsetting observations: `dt[i]`
+##### Subsetting observations: `dt[i]`
 
 You will often want to work with a subset of your data. That might be, the first *n* observations, a random sample of observations, or observations that meet a certain criteria. The first examples rely on positional indexing; we tell R to subset to the *i^{th}*, *j^{th}* and *k^{th}* observations. For example, observations 1 to 10, or 1 and 100, or 2, 6, 19 and 25. This is done by creating a vector of integers.
 
 <div class="box">
-**Side note: data structures and data types**
+
+###### Side note: data structures and data types
 
 A vector is the most basic data structure in R. It is a one dimensional structure, meaning it has a length but no width, and contain data of the same type. There are four data types you will encounter: logical, integer, double and character. 
 
