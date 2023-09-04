@@ -1,0 +1,235 @@
+---
+title: "Intro"
+output: html_document
+---
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Code+Pro:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Montserrat', sans-serif;}
+
+p {
+  font-weight: 400;
+  font-size: 12pt;
+  line-height: 24pt;
+  margin: 1.25em auto;}
+
+code, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Source Code Pro', monospace;}
+
+pre{
+  margin-bottom: 2.5em;
+}
+
+h1 {
+  padding-top: 1em;}
+
+h3 { 
+  padding-top: 2.5em; 
+  margin-top: 2em;
+  border-top: 1px solid #79a8b5;}
+  
+h3::before {
+  content: "> ";
+  color: #79a8b5;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warnings=FALSE)
+library(readr)
+```
+
+
+### Working directory
+
+When you start an R session, it is anchored to a directory on your computer. Functions reading and writing data, figures and outputs will act relative to this **working directory**. You can see which directory is your working directory by executing `getwd()` (get working directory). You can change the working directory with `setwd()` with a character string of the path to the directory (relative to the current). 
+
+```
+kqrx802
+|-- work
+|   |-- d346
+|   |-- d516
+|-- personal
+|   |-- photos
+|   |-- videos
+|   |-- r_projects
+|   |   |-- project_1
+|   |   |-- project_2
+|   |   |-- anna_learns_r
+|   |   |   |-- data
+|   |   |   |-- figures
+|   |-- documents
+```
+
+From the *kqrx802* directory, we can navigate to *anna_learns_r* with:
+
+```{r, eval=FALSE}
+setwd("personal/r_projects/anna_learns_r")
+```
+
+You can navigate up a directory with `..` or relative to the root using `~`.
+
+```{r, eval=FALSE}
+# e.g. from anna_learns_r/data to anna_learns_r figures
+setwd("../figures")
+
+# if the root is kqrx802
+setwd("~/personal/r_projects/anna_learns_r/figures")
+```
+
+With your working directory set to *anna_learns_r/figures*, you could use the `jpeg("figure1.jpeg")` function to output figures to the *figures* directory, while from *anna_learns_r* the same can be acheived with `jpeg("figures/figure1.jpeg")`.
+
+
+
+
+### Reading in data
+
+The [*readr*](https://readr.tidyverse.org/) package comes from the tidyverse and contains a number of functions for reading tabular data. 
+
+```{r, eval=FALSE, cache=TRUE}
+library(readr)
+
+# generic function for delimited files
+# - csv files
+read_delim("data/flights.csv")
+# - txt files
+read_delim("data/flights.txt")
+```
+
+For some reason, the tidyverse function to read excel files is in a different package, [*readxl*](https://readxl.tidyverse.org/).
+
+```{r, eval=FALSE, cache=TRUE}
+library(readxl)
+
+read_excel("data/flights.xlsx")
+```
+
+
+### Assignment
+
+The `read_*()` family of functions above will open the data, but they only existed in that moment. To keep the data available in the session, you can assign it to a named **variable**, storing it in the **working environment**. Variables provide a name to an object allowing that object to remain in memory and allow it to be recalled later. 
+
+There are several **assignment operators** in R that assign objects to named variables: `=`, `<-` and `->`. Both `=` and `<-` work right-to-left (*name* &larr; *object*), while `->` goes left-to-right (*object* &rarr; *name*).
+
+You will commonly see `=` being used, but it should be avoided (for uninteresting reasons). **Use `<-` and `->`.** We can now read in the flights data and assign it to a named variable, *flights*.
+
+```{r}
+flights <- read_delim("data/flights.csv")
+```
+
+With the object assigned to a variable, we can now recall that data-object and take a look at it. The `head()` function shows the top 6 rows allowing a good preview of the data. This shows the flights data is a set 19 variables (year, month, day, departure time, scheduled departure time, departure delay etc.). The `tail()` function does the same, but the last 6 observations.
+
+```{r}
+head(flights)
+tail(flights)
+
+# Note you don't need to use head()/tail() with tibbles (and data.tables) - more below
+flights
+```
+
+You can also get the dimensions, number of observations (rows) and number of variable (columns) using `dim()`, `nrow()` and `ncol()`. The `dim()` function returns both the number of rows and columns.
+
+```{r}
+dim(flights)
+nrow(flights)
+ncol(flights)
+```
+
+
+### Tibbles, data.frames and data.tables
+
+The flights data is a tabular dataset: made up of rows, each being an observation (1 flight), and columns, each being a specific property of the flights (e.g. distance). The data is stored in a structure called a **tibble**. The tibble is an extension of the base-R data structure for tabular data, the **data.frame**. The tibble is a class of data structure that is included with the tidyverse suite of packages. It was created as an improved version of the base-R data.frame, offering improved functionality and speed. Tidyverse functions will output data in tibbles.
+
+Another popular alternative to the data.frame is the **data.table**, from the data.table package. This is my preference - personally I don't like the way tibbles print to the console (only showing a subset of variables in detail, having data types, and providing extra detail - more often than not, it's just adding noise and I know how to access that info myself if and when I need it). Both tibbles and data.tables print a subset of observations for large datasets, so `head()` and `tail()` aren't really needed. To convert the flights dataset to a data.table, use the `setDT()` function.
+
+
+```{r}
+library(data.table)
+
+setDT(flights)
+
+# Preview the data
+flights
+```
+
+From now on, we will mostly be working in data.tables because they are fast and have an efficient and powerful syntax.
+
+
+
+### Indexing data.tables
+
+#### Subsetting observations: `dt[i]`
+
+You will often want to work with a subset of your data. That might be, the first *n* observations, a random sample of observations, or observations that meet a certain criteria. The first examples rely on positional indexing; we tell R to subset to the *i^{th}*, *j^{th}* and *k^{th}* observations. For example, observations 1 to 10, or 1 and 100, or 2, 6, 19 and 25. This is done by creating a vector of integers.
+
+<div class="box">
+**Side note: data structures and data types**
+
+A vector is the most basic data structure in R. It is a one dimensional structure, meaning it has a length but no width, and contain data of the same type. There are four data types you will encounter: logical, integer, double and character. 
+
+- You can collect, or **concatenate** values into a vector using the `c()` function (values are comma-separated). 
+- The type of data can be returned using `typeof()`. 
+- The length, or number of elements in a vector, can be returned using `length()`.
+- Type can be coerced using the `as.*()` family of functions
+
+**Logical**-type data can have one of two values, `TRUE` and `FALSE`. The values `T` and `F` can be and often are used as synonyms but should not be &mdash; it is bad practice.
+
+```{r}
+log_vec <- c(TRUE, FALSE, FALSE)
+typeof(log_vec)
+length(log_vec)
+as.logical(c("TRUE", "FALSE", "MAYBE"))
+```
+
+**Integer**-type data is any whole number (limited by being 4 bytes of memory to the range of -2.15B and 2.15B). You can signify that a number by using the `L` suffix. You can create a range of integers using the `:` operator.
+
+```{r}
+int_vec <- c(1L, 2L, 3L)
+typeof(int_vec)
+c(1L:5L)
+```
+
+**Double**-type data are real numbers &mdash; those with (the ability to have) fractions. One useful value for you is &pi;, and R has this as a built in value (or "constant"), as `pi`.
+
+```{r}
+dbl_vec <- c(1.5, 6.9, 91.4, 43)
+typeof(dbl_vec)
+typeof(c(1, 2, 3)) # The L wasn't present so it a double-type; compare to int_vec
+pi
+```
+
+**Character**-type data can be letters, numbers and symbols. Values are wrapped in quotes &mdash; single or double, it doesn't matter, but be consistent. You can also use back ticks &mdash; useful if your variables in your datasets have spaces (though you should rename them if they do, use underscores in place of spaces &mdash; standard convention in R is snake_case). Some useful constants are `letters`, `LETTERS`, `month.abb` and `month.name`.
+
+```{r}
+chr_vec <- c("TRUE", "FALSE", "MAYBE")
+typeof(chr_vec)
+month.name
+```
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<!--
+```{r}
+library(dplyr)
+flights %>% 
+  group_by(dest) %>% 
+  summarize("mean"=mean(distance))
+```
+-->
+
+
+
+
+
