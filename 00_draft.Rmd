@@ -48,6 +48,12 @@ h3::before {
   content: "> ";
   color: #79a8b5;
 }
+
+h5 {
+  color:#93a1b8;
+  width: 100%;
+  margin: 0 auto;
+}
 </style>
 
 ```{r setup, include=FALSE}
@@ -128,6 +134,8 @@ flights <- read_excel("data/flights_all.xlsx")
 
 This section covers some important fundamentals of data in R. While they're not essential to getting you up and running, understanding them will help you a lot. R is a statistical programming language so data is a central theme. When running R scripts and handling data, data will be organised into a **data structure**. There are four main structures that you will encounter on a regular basis: (atomic) vectors, matrices, lists and data.frames.
 
+##### Vectors
+
 Atomic vectors, always just referred to as **vectors**, are the most basic and every piece of data &mdash; even a single value &mdash; is structured into a vector. Vectors are created by passing values to the concatenate, `c()`, function (with commas between values). For single values, the `c()` can be omitted.
 
 ```{r}
@@ -144,6 +152,8 @@ length(vec_y)
 
 
 Second, vectors are homogeneous, so all data are of the same **data type**. Data type is the other important concept in this section. Like structures, there are four types that make up the vast majority that you will encounter: logical, integer, double and character. Type can be tested using the `typeof()` function.
+
+##### Data types
 
 **Logical**-type data can have one of two values, `TRUE` and `FALSE`. You will see people use `T` and `F` as synonyms, but that is a bad idea and should be avoided. The problem is that `TRUE` and `FALSE` are immutable (the meaning cannot be changed), but `T` and `F` can be &mdash; `T <- FALSE` is legitimate code that could ruin a program.
 
@@ -174,6 +184,11 @@ pi
 
 **Operations on vectors**
 
+##### Matrices
+
+##### Lists
+
+##### Data.frames (and tibbles and data.tables)
 
 
 
