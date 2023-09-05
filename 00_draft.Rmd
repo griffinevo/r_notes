@@ -1,0 +1,245 @@
+---
+title: "Intro"
+output: html_document
+---
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Code+Pro:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Montserrat', sans-serif;}
+
+p {
+  font-weight: 400;
+  font-size: 12pt;
+  line-height: 24pt;
+  margin: 1.25em auto;}
+
+code, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Source Code Pro', monospace;}
+
+pre{
+  border: 1px solid #a9c4bc;
+  background: white;
+  border-radius: 0 0 0.6em 0.6em;
+  margin: 0.5em 1em 2em 1em;
+  color: #637574;
+  box-shadow: inset 0 0 3px 4px #00000015;
+}
+
+pre.r {
+  border: 1px solid #6cad9a;
+  background: white;
+  border-radius: 0.6em 0.6em 0 0;
+  margin: 2em 1em 0.5em 1em;
+  color: black;
+}
+
+h1 {
+  padding-top: 1em;}
+
+h3 { 
+  padding-top: 2.5em; 
+  margin-top: 2em;
+  border-top: 1px solid #79a8b5;}
+  
+h3::before {
+  content: "> ";
+  color: #79a8b5;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warnings=FALSE)
+library(readr)
+library(readxl)
+library(data.table)
+library(dplyr)
+```
+
+
+
+
+### Working directory
+
+When you open RStudio, you are starting an R session. That session has a working directory &mdash; a directory on your machine associated with the project. Any files you read and write are specified relative to that working directory. For example, if your working directory is *documents*, you can output a figure to a file called figure1 in the figures directory with `jpeg("figures/figure1.jpg")`. Navigate up using `..`, so you could read a file from downloads using `read_excel("../data_file.xlsx")`.
+
+```
+C:\
+|-- Documents
+|   |-- Figures
+|   |-- Data
+|-- Downloads
+```
+
+Check your current working directory with `getwd()` and change it using `setwd()`, providing a text string with the path to the intended working directory. For example, `setwd("../Downloads")`. Or relative to the root, `read_excel("~/Downloads")`.
+
+
+
+
+### Install and load packages
+
+Packages contain related functions (e.g. the *ecmwfr* package allows for easy downloads of weather forecasts and climate reanalysis data in R), along with documentation and (sometimes) datasets. To install a package (the first time you use it), use `install.packages("<package_name>")`. Run this occasionally to update the package. This statement is best executed directly in the console.
+
+You will then need to attach/load the package at the start of any session you want to use it. Load packages using `library(<package_name>)`. Standard practice is to load packages at the beginning of the program by placing `library()` statements at the start of your scripts.
+
+
+
+### Reading data
+
+The [*readr*](https://readr.tidyverse.org/) package comes from the tidyverse and contains a number of functions for reading tabular data. The function to read excel files is in a different package, [*readxl*](https://readxl.tidyverse.org/).
+
+
+```{r, eval=FALSE, cache=TRUE}
+library(readr)
+library(readxl)
+
+# generic function for delimited files
+# - csv files
+read_delim("data/flights.csv")
+
+# - txt files
+read_delim("data/flights.txt")
+
+# function for excel files 
+read_excel("data/flights_all.xlsx")
+
+# - to read a specific sheet (AA)
+read_excel("data/flights_all.xlsx", sheet="AA")
+```
+
+
+### Assignment
+
+To keep the data available in the session, you can assign it to a named **variable**, storing it in the **working environment**. Variables provide a name to an object allowing that object to remain in memory and allow it to be recalled later. 
+
+There are several **assignment operators** in R that assign objects to named variables: `=`, `<-` and `->`. Both `=` and `<-` work right-to-left (*name* &larr; *object*), while `->` goes left-to-right (*object* &rarr; *name*).
+
+You will commonly see `=` being used, but it should be avoided (for uninteresting reasons). **Use `<-` and `->`.** We can now read in the flights data and assign it to a named variable, *flights*.
+
+```{r}
+flights <- read_excel("data/flights_all.xlsx")
+```
+
+
+
+### Data structures and types
+
+This section covers some important fundamentals of data in R. While they're not essential to getting you up and running, understanding them will help you a lot. R is a statistical programming language so data is a central theme. When running R scripts and handling data, data will be organised into a **data structure**. There are four main structures that you will encounter on a regular basis: (atomic) vectors, matrices, lists and data.frames.
+
+Atomic vectors, always just referred to as **vectors**, are the most basic and every piece of data &mdash; even a single value &mdash; is structured into a vector. Vectors are created by passing values to the concatenate, `c()`, function (with commas between values). For single values, the `c()` can be omitted.
+
+```{r}
+vec_x <- c(1, 2, 3, 4, 5)
+vec_y <- 3.141
+```
+
+Vectors have two defining characteristics. First, they are one-dimensional, soo they have a length, but not a width. The length is the number of elements/values the vector contains. The length can be returned using the `length()` function. 
+
+```{r}
+length(vec_x)
+length(vec_y)
+```
+
+
+Second, vectors are homogeneous, so all data are of the same **data type**. Data type is the other important concept in this section. Like structures, there are four types that make up the vast majority that you will encounter: logical, integer, double and character. Type can be tested using the `typeof()` function.
+
+**Logical**-type data can have one of two values, `TRUE` and `FALSE`. You will see people use `T` and `F` as synonyms, but that is a bad idea and should be avoided. The problem is that `TRUE` and `FALSE` are immutable (the meaning cannot be changed), but `T` and `F` can be &mdash; `T <- FALSE` is legitimate code that could ruin a program.
+
+```{r}
+log_vec <- c(TRUE, FALSE)
+typeof(log_vec)
+```
+
+**Integer**-type data is for whole numbers between -2.15B and 2.15B (becuase of memory limitations). We signify that a number is an integer by suffixing an `L`. A sequence of integers can be created using the `:` operator.
+
+```{r}
+int_vec <- c(1L, 5L, 8L, 4L, 3L)
+typeof(int_vec)
+c(1L:10L)
+```
+
+**Double**-type data is for real numbers &mdash; those that *can* have fractions. A handy built-in (constant) double value for you is `pi`. 
+
+```{r}
+dbl_vec <- c(1, 2, 3)
+typeof(dbl_vec)
+pi
+```
+
+**Character**-type
+
+**Coercion** - auto and manual
+
+**Operations on vectors**
+
+
+
+
+
+
+### Piping, a tidyverse obsession
+
+
+
+
+
+
+
+
+### Looping: `lapply()` and `sapply()`
+
+The flights_all.xlsx file above is an excel workbook with flight details for four airlines/carriers, with data for each airline on its own worksheet. But reading the data in using `read_excel()` defaulted to the first sheet (AA).
+
+```{r}
+flights %>% 
+  distinct(carrier)
+```
+
+You can get a vector (a vector is a one dimensional data structure, used to collect data) of the sheets in the workbook using `excel_sheets()`.
+
+```{r, cache=TRUE}
+excel_sheets("data/flights_all.xlsx") 
+```
+
+We can then loop through these values using the `lapply()` or `sapply()` functions. For illustration, print the names of the carriers to the console.
+
+```{r, cache=TRUE}
+carriers <- excel_sheets("data/flights_all.xlsx")
+sapply(carriers, function(carrier){ 
+  print(paste("Carrier code:", carrier))
+})
+```
+
+Modifying this, we can have `lapply()` return a list where each element of the list is a carrier-specific dataset. The data.table package has a function that can be used to append each of those on to each other into a single dataset.
+
+```{r, cache=TRUE}
+flights <- 
+  lapply(carriers, function(carrier){
+    read_excel("data/flights_all.xlsx", sheet=carrier)
+  }) %>% 
+  rbindlist() %>% 
+  tibble()
+
+
+flights %>% 
+  distinct(carrier)
+```
+
+
+### Subsetting and sorting data
+
+Once your data is loaded, you may want to subset your data &mdash; reducing it to observations that meet a certain criteria. For example, we could subset the flights data to those with delays of two or more hours. This requires a logical operation, testing each observation and returning a vector of logical values which are used to select observations.
+
+```{r}
+flights %>% 
+  filter(arr_delay>=120)
+```
+
+
+
+
+
+
+
